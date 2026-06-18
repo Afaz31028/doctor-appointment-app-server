@@ -13,9 +13,6 @@ app.use(express.json());
 app.get('/', (req,res)=>{
     res.send('Server is Runnning Successfully');
 })
-//ce0v94FfYSCIFhqL
-//doctor-appointment
-
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_URI}:${process.env.DB_PASS}@cluster0.nkigazd.mongodb.net/?appName=Cluster0`;
@@ -36,6 +33,7 @@ async function run() {
 
     const db= client.db('doctor-appointment');
     const doctorCollections= db.collection('doctors');
+    const appointmentCollections= db.collection('appointments')
 
     app.get('/doctors', async(req,res)=>{
         const result= await doctorCollections.find().toArray();
@@ -46,6 +44,12 @@ async function run() {
         const {id} = req.params;
         const query = {_id: new ObjectId(id)};
         const result = await doctorCollections.findOne(query);
+        res.send(result);
+    })
+
+    app.post('/doctors/:id/appointments', async(req,res)=>{
+        const data = req.body;
+        const result= await appointmentCollections.insertOne(data);
         res.send(result);
     })
 
