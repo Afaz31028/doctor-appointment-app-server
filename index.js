@@ -52,9 +52,16 @@ async function run() {
         res.send(result);
     })
 
-    app.get('/appointments/:userId', async(req,res)=>{
+    app.get('/appointments/user/:userId', async(req,res)=>{
         const {userId} = req.params;
         const result= await appointmentCollections.find({userId : userId}).toArray();
+        res.send(result);
+    })
+
+    app.patch("/appointments/:appointmentId", async(req,res)=>{
+        const {appointmentId} = req.params;
+        const updatedData= req.body;
+        const result= await appointmentCollections.updateOne({_id: new ObjectId(appointmentId)}, {$set: updatedData});
         res.send(result);
     })
     // Send a ping to confirm a successful connection
