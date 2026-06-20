@@ -15,7 +15,7 @@ app.get('/', (req,res)=>{
 })
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const uri = `mongodb+srv://${process.env.DB_URI}:${process.env.DB_PASS}@cluster0.nkigazd.mongodb.net/?appName=Cluster0`;
+const uri = process.env.MONGODB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -33,13 +33,12 @@ async function run() {
 
     const db= client.db('doctor-appointment');
     const doctorCollections= db.collection('doctors');
-    const appointmentCollections= db.collection('appointments')
+    const appointmentCollections= db.collection('appointments');
 
     app.get('/doctors', async(req,res)=>{
         const result= await doctorCollections.find().toArray();
         res.send(result);
     })
-
     app.get('/doctors/:id', async(req,res)=>{
         const {id} = req.params;
         const query = {_id: new ObjectId(id)};
@@ -53,6 +52,11 @@ async function run() {
         res.send(result);
     })
 
+    app.get('/appointments/:userId', async(req,res)=>{
+        const {userId} = req.params;
+        const result= await appointmentCollections.find({userId : userId}).toArray();
+        res.send(result);
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
