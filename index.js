@@ -15,6 +15,7 @@ app.get('/', (req,res)=>{
 })
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs');
 const uri = process.env.MONGODB_URI;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -34,6 +35,7 @@ async function run() {
     const db= client.db('doctor-appointment');
     const doctorCollections= db.collection('doctors');
     const appointmentCollections= db.collection('appointments');
+    const usersCollections=db.collection('users');
 
     app.get('/doctors', async(req,res)=>{
         const result= await doctorCollections.find().toArray();
@@ -69,6 +71,13 @@ async function run() {
         const {appointmentId}= req.params;
         const result= await appointmentCollections.deleteOne({_id: new ObjectId(appointmentId)})
         res.send(result)
+    })
+
+    app.patch('/user/:userId', async(req,res)=>{
+        const {userId} = req.params;
+        const profileData= req.body;
+        const result= await user.updateOne({_id: new ObjectId(userId)},{$set: profileData})
+        res.json(result);
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
