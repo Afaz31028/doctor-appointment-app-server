@@ -58,7 +58,7 @@ async function run() {
     const appointmentCollections= db.collection('appointments');
     const usersCollections=db.collection('users');
 
-    app.get('/doctors',verifyToken, async(req,res)=>{
+    app.get('/doctors', async(req,res)=>{
         const result= await doctorCollections.find().toArray();
         res.send(result);
     })
@@ -81,24 +81,17 @@ async function run() {
         res.send(result);
     })
 
-    app.patch("/appointments/:appointmentId", async(req,res)=>{
+    app.patch("/appointments/:appointmentId",verifyToken, async(req,res)=>{
         const {appointmentId} = req.params;
         const updatedData= req.body;
         const result= await appointmentCollections.updateOne({_id: new ObjectId(appointmentId)}, {$set: updatedData});
         res.send(result);
     })
 
-    app.delete("/appointments/:appointmentId", async(req,res)=>{
+    app.delete("/appointments/:appointmentId",verifyToken, async(req,res)=>{
         const {appointmentId}= req.params;
         const result= await appointmentCollections.deleteOne({_id: new ObjectId(appointmentId)})
         res.send(result)
-    })
-
-    app.patch('/user/:userId', async(req,res)=>{
-        const {userId} = req.params;
-        const profileData= req.body;
-        const result= await user.updateOne({_id: new ObjectId(userId)},{$set: profileData})
-        res.json(result);
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
